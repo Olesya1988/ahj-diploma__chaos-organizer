@@ -102,7 +102,7 @@ export default class Modals {
     online.appendChild(onlineImg);
 
     const onlineText = document.createElement('div');
-    onlineText.classList.add('modal-exit__online-text');
+    onlineText.classList.add('modal-exit__online-text', 'modal-exit__text');
     onlineText.textContent = 'Онлайн';
     online.appendChild(onlineText);
 
@@ -115,7 +115,7 @@ export default class Modals {
     departed.appendChild(departedImg);
 
     const departedText = document.createElement('div');
-    departedText.classList.add('modal-exit__departed-text');
+    departedText.classList.add('modal-exit__departed-text', 'modal-exit__text');
     departedText.textContent = 'Отошёл';
     departed.appendChild(departedText);
 
@@ -128,7 +128,7 @@ export default class Modals {
     noDisturb.appendChild(noDisturbImg);
 
     const noDisturbText = document.createElement('div');
-    noDisturbText.classList.add('modal-exit__noDisturb-text');
+    noDisturbText.classList.add('modal-exit__noDisturb-text', 'modal-exit__text');
     noDisturbText.textContent = 'Не беспокоить';
     noDisturb.appendChild(noDisturbText);
 

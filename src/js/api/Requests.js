@@ -113,4 +113,24 @@ export default class Requests {
       method: 'GET',
     });
   }
+
+  async searchByWord(word) {
+    const search = {
+      word,
+    };
+    await fetch(`${this.url}?method=searchByWord`, {
+      method: 'POST',
+      body: JSON.stringify(search),
+    });
+  }
+
+  async getSearch() {
+    const response = await fetch(`${this.url}?method=getSearch`, {
+      method: 'GET',
+    });
+
+    const result = await response.json();
+
+    return result;
+  }
 }

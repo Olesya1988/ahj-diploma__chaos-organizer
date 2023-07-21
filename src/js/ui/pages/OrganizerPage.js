@@ -47,6 +47,10 @@ export default class OrganizerPage {
   submit(e) {
     e.preventDefault();
     const { target } = e;
+    Array.from(document.querySelectorAll('.post')).forEach((el) => {
+      el.style.background = 'white';
+    });
+
     const input = document.querySelector('.posts-footer__input__user');
     const inputBot = document.querySelector('.posts-footer__input__bot');
 
@@ -63,8 +67,12 @@ export default class OrganizerPage {
       const answer = this.chatWithBotView.getRandomInfo(inputBot.value);
       this.postView.getPostHTML(null, this.user, inputBot.value, new Date().toLocaleString(), null, this.place, null, null, null, parent);
       this.postView.getPostHTML(null, 'Bot', answer, new Date().toLocaleString(), null, this.place, null, null, null, parent);
-      this.clickable();
+      // this.clickable();
       inputBot.value = '';
+    } else if (target.classList.contains('container-header__search-form')) { // отправляем запрос поиска
+      const search = document.querySelector('.container-header__search-input').value;
+      this.requests.searchByWord(search);
+      this.search();
     }
   }
 
@@ -139,6 +147,23 @@ export default class OrganizerPage {
       document.querySelector('.files-container').classList.add('invisible');
     } else if (target.classList.contains('link')) { // скачиваем файл - НЕ РАБОТАЕТ :(
       target.click();
+    } else if (target.classList.contains('smiles')) { // показываем/скрываем эмодзи
+      document.querySelector('.smiles-list').classList.toggle('invisible');
+    } else if (target.classList.contains('smiles-item')) { // добавляем эмодзи
+      document.querySelector('.posts-footer__input__user').value += target.textContent;
+    } else if (target.classList.contains('modal-exit__text')) { // меняем статус
+      this.changeStatus(target);
+    } else if (target.classList.contains('modal-exit__exit-text')) { // выход
+      location.reload();
+    } else if (target.classList.contains('container-header__search-input')) { // снимаем выделение найденных элементов
+      Array.from(document.querySelectorAll('.post')).forEach((el) => {
+        el.style.background = 'white';
+      });
+    } else if (target.classList.contains('search-container__close')) { // закрываем меню с результатами поиска
+      document.querySelector('.search-container').classList.add('invisible');
+      Array.from(document.querySelectorAll('.post')).forEach((el) => {
+        el.style.background = 'white';
+      });
     } else if (target.classList.contains('container-header__profile')) { // открываем меню с профилем
       document.querySelector('.modal-exit').classList.toggle('invisible');
     } else if (!target.classList.contains('modal-exit')) { // закрываем меню с профилем
@@ -152,9 +177,11 @@ export default class OrganizerPage {
     const data = await this.requests.getAllPostsByUser();
 
     const parent = document.querySelector('.posts-list__user');
-    data.forEach((el) => {
-      this.postView.getPostHTML(el.id, el.name, el.content, new Date(el.created).toLocaleString(), el.status, el.coordinates, el.img, el.audio, el.video, parent);
-    });
+
+    for (let i = 0; i < data.length; i++) {
+      this.postView.getPostHTML(data[i].id, data[i].name, data[i].content, new Date(data[i].created).toLocaleString(), data[i].status, data[i].coordinates, data[i].img, data[i].audio, data[i].video, parent);
+    }
+
     document.querySelector('.posts-footer__input').value = '';
     if (document.querySelector('.posts-list').lastElementChild !== null) {
       document.querySelector('.posts-list').lastElementChild.scrollIntoView();
@@ -222,7 +249,7 @@ export default class OrganizerPage {
     const regExp = /((http|https):\/\/[.\w/=&-?]+)/gi;
 
     for (let i = 0; i < codeElems.length; i++) {
-      codeElems[i].innerHTML = codeElems[i].innerHTML.replace(regExp, '<a href="$1" onclick="$1" target="blank">$1</a>');
+      codeElems[i].innerHTML = codeElems[i].innerHTML.replace(regExp, '<a href="$1" target="blank">$1</a>');
     }
   }
 
@@ -267,8 +294,10 @@ export default class OrganizerPage {
 
       const file = e.dataTransfer.files && e.dataTransfer.files[0];
       if (!file) return;
+
       previewTitle.textContent = file.name;
       const url = URL.createObjectURL(file);
+
       this.fileName = file.name.toLowerCase();
 
       if (regImg.test(this.fileName)) {
@@ -292,6 +321,7 @@ export default class OrganizerPage {
 
       previewTitle.textContent = file.name;
       const url = URL.createObjectURL(file);
+
       this.fileName = file.name.toLowerCase();
 
       if (regImg.test(this.fileName)) {
@@ -314,5 +344,38 @@ export default class OrganizerPage {
     link.text = name;
     parent.appendChild(link);
     link.download = name;
+  }
+
+  // отрисовываем заливку найденных слов
+  async search() {
+    const parent = document.querySelector('.search-container__list');
+    parent.innerHTML = '';
+    const data = await this.requests.getSearch();
+    const posts = document.querySelectorAll('.identifier');
+
+    for (let i = 0; i < data.length; i++) {
+      for (let j = 0; j < posts.length; j++) {
+        if (data[i].id === posts[j].textContent) {
+          posts[j].closest('.post').style.background = 'lightgrey';
+          const arr = [];
+          arr.push(posts[j]);
+          arr[arr.length - 1].closest('.post').scrollIntoView();
+        }
+      }
+    }
+
+    document.querySelector('.search-container').classList.remove('invisible');
+
+    for (let i = 0; i < data.length; i++) {
+      this.postView.getPostHTML(null, data[i].name, data[i].content, new Date(data[i].created).toLocaleString(), data[i].status, null, data[i].img, data[i].audio, data[i].video, parent);
+    }
+    document.querySelector('.container-header__search-input').value = '';
+  }
+
+  changeStatus(target) {
+    const userStatus = document.querySelector('.user-status');
+    userStatus.classList.remove('modal-exit__online-img', 'modal-exit__departed-img', 'modal-exit__noDisturb-img');
+    const className = target.closest('.modal-exit__menu-item').querySelector('div').classList;
+    userStatus.classList.add(className);
   }
 }

@@ -18,11 +18,15 @@ export default class ChatView {
     title.textContent = 'Chaos Organizer';
     header.appendChild(title);
 
+    const searchForm = document.createElement('form');
+    searchForm.classList.add('container-header__search-form');
+    header.appendChild(searchForm);
+
     const search = document.createElement('input');
-    search.classList.add('container-header__search');
-    search.textContent = 'Chaos Organizer';
+    search.classList.add('container-header__search-input');
     search.placeholder = 'Поиск';
-    header.appendChild(search);
+    search.required = true;
+    searchForm.appendChild(search);
 
     const profile = document.createElement('div');
     profile.classList.add('container-header__profile');
@@ -38,13 +42,29 @@ export default class ChatView {
 
     const user = document.createElement('div');
     user.classList.add('user-item', 'user', 'active-user');
-    user.textContent = `${this.user} (Вы)`;
     usersList.appendChild(user);
+
+    const userStatus = document.createElement('div');
+    userStatus.classList.add('user-status', 'modal-exit__online-img');
+    user.appendChild(userStatus);
+
+    const userName = document.createElement('div');
+    userName.classList.add('user-name');
+    userName.textContent = `${this.user} (Вы)`;
+    user.appendChild(userName);
 
     const bot = document.createElement('div');
     bot.classList.add('user-item', 'bot');
-    bot.textContent = 'Bot';
     usersList.appendChild(bot);
+
+    const botStatus = document.createElement('div');
+    botStatus.classList.add('modal-exit__online-img');
+    bot.appendChild(botStatus);
+
+    const botName = document.createElement('div');
+    botName.classList.add('bot-name');
+    botName.textContent = 'Bot';
+    bot.appendChild(botName);
 
     const postArea = document.createElement('div');
     postArea.classList.add('post-area', 'post-area__user');
@@ -122,8 +142,26 @@ export default class ChatView {
     attachСontainer.appendChild(overlap);
 
     const smiles = document.createElement('button');
-    smiles.classList.add('smiles', 'smiles__user');
+    smiles.classList.add('smiles');
     buttons.appendChild(smiles);
+
+    const smilesList = document.createElement('button');
+    smilesList.classList.add('smiles-list', 'invisible');
+    postArea.appendChild(smilesList);
+
+    smilesList.innerHTML = `
+    <div class="smiles-item">&#128522;</div>
+    <div class="smiles-item">&#129315;</div>
+    <div class="smiles-item">&#128525;</div>
+    <div class="smiles-item">&#128557;</div>
+    <div class="smiles-item">&#128520;</div>
+    <div class="smiles-item">&#128545;</div>
+    <div class="smiles-item">&#128526;</div>
+    <div class="smiles-item">&#128563;</div>
+    <div class="smiles-item">&#128565;</div>
+    <div class="smiles-item">&#128640;</div>
+    <div class="smiles-item">&#128561;</div>
+    <div class="smiles-item">&#128591;</div>`;
 
     const prev = document.createElement('div');
     prev.classList.add('prev', 'invisible');

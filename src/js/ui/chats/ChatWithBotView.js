@@ -22,11 +22,51 @@ export default class ChatWithBotView {
       '«Война и мир», Лев Толстой',
     ];
     this.tracks = [
-      '«Bohemian Rhapsody», Queen',
-      '«Billie Jean», Майкл Джексон',
-      '«Hallelujah», Джеф Бакли',
-      '«No Woman, No Cry», Bob Marley & the Wailers',
-      '«Under Pressure», Queen и Дэвид Боуи',
+      `<iframe width="560" height="315" 
+      src="https://www.youtube.com/embed/fJ9rUzIMcZQ" 
+      title="YouTube video player" 
+      frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+      allowfullscreen></iframe>`,
+      `<iframe width="560" height="315" 
+      src="https://www.youtube.com/embed/n4RjJKxsamQ" 
+      title="YouTube video player" 
+      frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+      allowfullscreen></iframe>`,
+      `<iframe width="560" height="315" 
+      src="https://www.youtube.com/embed/BciS5krYL80" 
+      title="YouTube video player" 
+      frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+      allowfullscreen></iframe>`,
+      `<iframe width="560" height="315" 
+      src="https://www.youtube.com/embed/6Ejga4kJUts" 
+      title="YouTube video player" 
+      frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+      allowfullscreen></iframe>`,
+      `<iframe width="560" height="315" 
+      src="https://www.youtube.com/embed/7wtfhZwyrcc" 
+      title="YouTube video player" 
+      frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+      allowfullscreen></iframe>`,
+      `<iframe width="560" height="315" 
+      src="https://www.youtube.com/embed/_4FvARQkhV8" 
+      title="YouTube video player" 
+      frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+      allowfullscreen></iframe>`,
+      `<iframe width="560" height="315" 
+      src="https://www.youtube.com/embed/HyHNuVaZJ-k" 
+      title="YouTube video player" 
+      frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+      allowfullscreen></iframe>`,
+      `<iframe width="560" height="315" 
+      src="https://www.youtube.com/embed/spDy95Sww6k" 
+      title="YouTube video player" 
+      frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+      allowfullscreen></iframe>`,
+      `<iframe width="560" height="315" 
+      src="https://www.youtube.com/embed/god7hAPv8f0" 
+      title="YouTube video player" 
+      frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+      allowfullscreen></iframe>`,
     ];
     this.cities = [
       'Прага – столица и крупнейший город Чешской Республики. Здесь проживает около 1,3 миллиона человек. Благодаря своему историческому центру он считается одним из самых красивых городов мира. Наиболее важные памятники включают Пражский Град, Карлов мост и Староместскую площадь.',
@@ -120,6 +160,19 @@ export default class ChatWithBotView {
     const videoList = document.createElement('div');
     videoList.classList.add('file-video__list');
     video.appendChild(videoList);
+
+    const searchContainer = document.createElement('div');
+    searchContainer.classList.add('search-container', 'invisible');
+    searchContainer.textContent = 'Результаты поиска';
+    body.appendChild(searchContainer);
+
+    const searchContainerClose = document.createElement('div');
+    searchContainerClose.classList.add('search-container__close');
+    searchContainer.appendChild(searchContainerClose);
+
+    const searchContainerList = document.createElement('div');
+    searchContainerList.classList.add('search-container__list');
+    searchContainer.appendChild(searchContainerList);
   }
 
   getRandomInfo(value) {

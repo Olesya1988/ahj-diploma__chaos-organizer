@@ -50,7 +50,7 @@ export default class PostView {
 
     const text = document.createElement('div');
     text.classList.add('post-text');
-    text.textContent = content;
+    text.innerHTML = content;
     body.appendChild(text);
 
     const input = document.createElement('input');
