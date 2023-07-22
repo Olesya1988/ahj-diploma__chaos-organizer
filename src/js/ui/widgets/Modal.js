@@ -85,7 +85,7 @@ export default class Modals {
     menu.appendChild(profile);
 
     const profilePhoto = document.createElement('div');
-    profilePhoto.classList.add('modal-exit__profile-img');
+    profilePhoto.classList.add('modal-exit__profile-img', 'modal-settings__photo-cat');
     profile.appendChild(profilePhoto);
 
     const profileName = document.createElement('div');
@@ -157,6 +157,51 @@ export default class Modals {
     exitText.classList.add('modal-exit__exit-text');
     exitText.textContent = 'Выйти';
     exit.appendChild(exitText);
+  }
+
+  // меню с настройками профиля
+  drawProfileSettings() {
+    const modal = document.createElement('div');
+    modal.classList.add('modal-settings', 'invisible');
+    this.container.appendChild(modal);
+
+    const modalHeader = document.createElement('div');
+    modalHeader.classList.add('modal-settings__header');
+    modalHeader.textContent = 'Профиль';
+    modal.appendChild(modalHeader);
+
+    const modalBody = document.createElement('div');
+    modalBody.classList.add('modal-settings__body');
+    modal.appendChild(modalBody);
+
+    const modalText = document.createElement('div');
+    modalText.classList.add('modal-settings__text');
+    modalText.textContent = 'Выберите фото:';
+    modalBody.appendChild(modalText);
+
+    const modalPhoto = document.createElement('div');
+    modalPhoto.classList.add('modal-settings__photo');
+    modalBody.appendChild(modalPhoto);
+
+    const modalPhotoCat = document.createElement('div');
+    modalPhotoCat.classList.add('modal-settings__photo-cat', 'modal-settings__photo-item');
+    modalPhoto.appendChild(modalPhotoCat);
+
+    const modalPhotoDog = document.createElement('div');
+    modalPhotoDog.classList.add('modal-settings__photo-dog', 'modal-settings__photo-item');
+    modalPhoto.appendChild(modalPhotoDog);
+
+    const modalPhotoWhale = document.createElement('div');
+    modalPhotoWhale.classList.add('modal-settings__photo-whale', 'modal-settings__photo-item');
+    modalPhoto.appendChild(modalPhotoWhale);
+
+    const modalPhotoBird = document.createElement('div');
+    modalPhotoBird.classList.add('modal-settings__photo-bird', 'modal-settings__photo-item');
+    modalPhoto.appendChild(modalPhotoBird);
+
+    const modalClose = document.createElement('div');
+    modalClose.classList.add('modal-settings__close');
+    modal.appendChild(modalClose);
   }
 
   show(item) {

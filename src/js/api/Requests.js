@@ -107,6 +107,27 @@ export default class Requests {
     });
   }
 
+  // обновляем фото
+  async updatePhoto(profilePhotoClassName) {
+    const className = {
+      profilePhotoClassName,
+    };
+    await fetch(`${this.url}?method=updatePhoto`, {
+      method: 'POST',
+      body: JSON.stringify(className),
+    });
+  }
+
+  async getUpdatePhoto() {
+    const response = await fetch(`${this.url}?method=getUpdatePhoto`, {
+      method: 'GET',
+    });
+
+    const result = await response.json();
+
+    return result;
+  }
+
   // удаляем пост
   async delete(id) {
     await fetch(`${this.url}?method=deleteById&id=${id}`, {

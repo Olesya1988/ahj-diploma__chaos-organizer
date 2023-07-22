@@ -20,6 +20,100 @@ html, body, #root, .background {
   overflow: hidden;
 }
 
+/* preloader */
+.loader {
+  background: #bfdaf8;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 99999;
+}
+
+.loader-inner {
+  bottom: 0;
+  height: 60px;
+  left: 0;
+  margin: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100px;
+}
+
+.loader-line-wrap {
+  animation: 
+  spin 2000ms cubic-bezier(.175, .885, .32, 1.275) infinite
+;
+  box-sizing: border-box;
+  height: 50px;
+  left: 0;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  transform-origin: 50% 100%;
+  width: 100px;
+}
+.loader-line {
+  border: 4px solid transparent;
+  border-radius: 100%;
+  box-sizing: border-box;
+  height: 100px;
+  left: 0;
+  margin: 0 auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100px;
+}
+.loader-line-wrap:nth-child(1) { animation-delay: -50ms; }
+.loader-line-wrap:nth-child(2) { animation-delay: -100ms; }
+.loader-line-wrap:nth-child(3) { animation-delay: -150ms; }
+.loader-line-wrap:nth-child(4) { animation-delay: -200ms; }
+.loader-line-wrap:nth-child(5) { animation-delay: -250ms; }
+
+.loader-line-wrap:nth-child(1) .loader-line {
+  border-color: hsl(0, 80%, 60%);
+  height: 90px;
+  width: 90px;
+  top: 7px;
+}
+.loader-line-wrap:nth-child(2) .loader-line {
+  border-color: hsl(60, 80%, 60%);
+  height: 76px;
+  width: 76px;
+  top: 14px;
+}
+.loader-line-wrap:nth-child(3) .loader-line {
+  border-color: hsl(120, 80%, 60%);
+  height: 62px;
+  width: 62px;
+  top: 21px;
+}
+.loader-line-wrap:nth-child(4) .loader-line {
+  border-color: hsl(180, 80%, 60%);
+  height: 48px;
+  width: 48px;
+  top: 28px;
+}
+.loader-line-wrap:nth-child(5) .loader-line {
+  border-color: hsl(240, 80%, 60%);
+  height: 34px;
+  width: 34px;
+  top: 35px;
+}
+
+@keyframes spin {
+  0%, 15% {
+  transform: rotate(0);
+}
+100% {
+  transform: rotate(360deg);
+}
+}
+
 /* StartPage */
 .background {
   background-image: url('../pic/1611938603_24-p-goluboi-fon-s-razvodami-25.jpg');
@@ -98,10 +192,16 @@ html, body, #root, .background {
 .container-header__profile {
   width: 40px;
   height: 40px;
-  background-image: url('../pic/british-shorthair-cat.png');
   background-repeat: no-repeat;
   background-size: cover;
   cursor: pointer;
+  position: relative;
+}
+
+.container-header__profile-status {
+  position: absolute;
+  bottom: 0;
+  right: 0;
 }
 
 .container-body {  
@@ -124,6 +224,10 @@ html, body, #root, .background {
   display: flex;
   gap: 5px;
   align-items: center;
+}
+
+.user-name, .bot-name {
+  width: 100%;
 }
 
 .user-item:hover {
@@ -313,6 +417,10 @@ html, body, #root, .background {
   cursor: pointer;
 }
 
+.smiles-item:hover {
+  background-color: #e5effa;
+}
+
 .prev {
   margin-top: 10px;
   width: 400px;
@@ -420,10 +528,6 @@ html, body, #root, .background {
   background-size: contain;
 }
 
-.post-photo__user {  
-  background-image: url('../pic/british-shorthair-cat.png');  
-}
-
 .post-photo__bot {  
   background-image: url('../pic/bot.png');  
 }
@@ -458,7 +562,7 @@ html, body, #root, .background {
 }
 
 .post-text {
-  font-size: 15px;
+  font-size: 13px;
   width: 100%;
 }
 
@@ -468,16 +572,21 @@ html, body, #root, .background {
   right: 10px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 10px;
   padding: 5px;
   background-color: white;
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
 
-.toPinned, .toEdit, .toDelete {
+.post-menu__item {
   width: 15px;
   height: 15px;
   cursor: pointer;
+}
+
+.post-menu__item:hover {
+  background-color: #e5effa; 
 }
 
 .toPinned {
@@ -496,7 +605,8 @@ html, body, #root, .background {
   background-image: url('../pic/close.png');
   background-repeat: no-repeat;
   background-size: cover;
-  padding: 8px;  
+  width: 12px;
+  height: 12px;
 }
 
 .edit {
@@ -614,12 +724,11 @@ html, body, #root, .background {
   width: 100%;
 }
 
-.modal-exit__exit-text {
+.modal-exit__exit-text, .modal-exit__info-text {
   width: 100%;
 }
 
 .modal-exit__profile-img {
-  background-image: url('../pic/british-shorthair-cat.png');
   background-repeat: no-repeat;
   background-size: cover;
   width: 60px;
@@ -661,6 +770,78 @@ html, body, #root, .background {
   background-size: cover;
   width: 15px;
   height: 15px;
+}
+
+/* drawProfileSettings */
+
+.modal-settings {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  padding: 20px;
+  background-color: white;
+  border-radius: 7px;
+}
+
+.modal-settings__text {
+  font-size: 12px;
+  padding-top: 10px;
+  padding-bottom: 5px; 
+}
+
+.modal-settings__body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.modal-settings__photo {
+  display: flex;  
+  flex-wrap: wrap;
+  width: 150px;
+  height: 150px;
+}
+
+.modal-settings__photo-item {
+  width: 50%;
+  height: 50%;
+  border: 1px solid black;
+  background-repeat: no-repeat;
+  background-size: cover;
+  cursor: pointer;
+}
+
+.modal-settings__photo-cat {
+  background-image: url('../pic/british-shorthair-cat.png');
+}
+
+.modal-settings__photo-dog {
+  background-image: url('../pic/dog.png');
+}
+
+.modal-settings__photo-bird {
+  background-image: url('../pic/bird.png');
+}
+
+.modal-settings__photo-whale {
+  background-image: url('../pic/whale.png');
+}
+
+.modal-settings__close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  width: 10px;
+  height: 10px;
+  background-image: url('../pic/close.png');
+  background-repeat: no-repeat;
+  background-size: cover; 
 }
 
 /* drawGetCoordinates */

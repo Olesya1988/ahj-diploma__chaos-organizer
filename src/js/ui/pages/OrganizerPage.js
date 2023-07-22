@@ -17,15 +17,18 @@ export default class OrganizerPage {
   }
 
   init() {
+    this.preloader();
     this.chatView.drawUI();
     this.chatWithBotView.drawUI();
     this.modals.drawDelete();
     this.modals.drawExit(this.user);
+    this.modals.drawProfileSettings(this.user);
     this.coordinates.drawModal();
     this.coordinates.drawWarning();
     this.getCoordinates();
     this.modalDelete = document.querySelector('.modal-delete');
     this.postView = new PostView();
+    this.changePhoto();
     this.getPosts();
     this.getFiles();
     this.getPinnedPosts();
@@ -37,6 +40,7 @@ export default class OrganizerPage {
     this.video;
     this.fileName;
     this.place;
+    this.profilePhotoClassName;
   }
 
   bindToDOM() {
@@ -67,7 +71,6 @@ export default class OrganizerPage {
       const answer = this.chatWithBotView.getRandomInfo(inputBot.value);
       this.postView.getPostHTML(null, this.user, inputBot.value, new Date().toLocaleString(), null, this.place, null, null, null, parent);
       this.postView.getPostHTML(null, 'Bot', answer, new Date().toLocaleString(), null, this.place, null, null, null, parent);
-      // this.clickable();
       inputBot.value = '';
     } else if (target.classList.contains('container-header__search-form')) { // отправляем запрос поиска
       const search = document.querySelector('.container-header__search-input').value;
@@ -114,10 +117,10 @@ export default class OrganizerPage {
       this.postView.addPost(text);
       this.postView.hideInput(input);
       this.postView.hideHelp(help);
-    } else if (target.classList.contains('bot')) { // переключение на чат с ботом
-      this.showBot(target);
-    } else if (target.classList.contains('user')) { // переключение на чат с пользователем
-      this.showUser(target);
+    } else if (target.classList.contains('bot-name')) { // переключение на чат с ботом
+      this.showBot();
+    } else if (target.classList.contains('user-name')) { // переключение на чат с пользователем
+      this.showUser();
     } else if (target.classList.contains('toPinned')) { // закрепляем пост
       this.id = this.getId(target);
       this.requests.postById(this.id);
@@ -153,6 +156,15 @@ export default class OrganizerPage {
       document.querySelector('.posts-footer__input__user').value += target.textContent;
     } else if (target.classList.contains('modal-exit__text')) { // меняем статус
       this.changeStatus(target);
+    } else if (target.classList.contains('modal-exit__info-text')) { // открываем редактирование профиля
+      document.querySelector('.modal-settings').classList.remove('invisible');
+    } else if (target.classList.contains('modal-settings__close')) { // закрываем редактирование профиля
+      document.querySelector('.modal-settings').classList.add('invisible');
+    } else if (target.classList.contains('modal-settings__photo-item')) { // меняем фото
+      const className = [...target.classList];
+      this.requests.updatePhoto(className[0]);
+      this.changePhoto();
+      this.getPosts();
     } else if (target.classList.contains('modal-exit__exit-text')) { // выход
       location.reload();
     } else if (target.classList.contains('container-header__search-input')) { // снимаем выделение найденных элементов
@@ -179,7 +191,7 @@ export default class OrganizerPage {
     const parent = document.querySelector('.posts-list__user');
 
     for (let i = 0; i < data.length; i++) {
-      this.postView.getPostHTML(data[i].id, data[i].name, data[i].content, new Date(data[i].created).toLocaleString(), data[i].status, data[i].coordinates, data[i].img, data[i].audio, data[i].video, parent);
+      this.postView.getPostHTML(data[i].id, data[i].name, data[i].content, new Date(data[i].created).toLocaleString(), data[i].status, data[i].coordinates, data[i].img, data[i].audio, data[i].video, parent, this.profilePhotoClassName);
     }
 
     document.querySelector('.posts-footer__input').value = '';
@@ -221,6 +233,17 @@ export default class OrganizerPage {
     document.querySelector('.pinned_post-text').innerHTML = data.content;
   }
 
+  // загрузка нового фото пользователя
+  async changePhoto() {
+    this.profilePhotoClassName = await this.requests.getUpdatePhoto();
+    const containerHeaderProfile = document.querySelector('.container-header__profile');
+    const modalExitProfileImg = document.querySelector('.modal-exit__profile-img');
+    containerHeaderProfile.classList.remove('modal-settings__photo-cat', 'modal-settings__photo-dog', 'modal-settings__photo-bird', 'modal-settings__photo-whale');
+    modalExitProfileImg.classList.remove('modal-settings__photo-cat', 'modal-settings__photo-dog', 'modal-settings__photo-bird', 'modal-settings__photo-whale');
+    containerHeaderProfile.classList.add(this.profilePhotoClassName);
+    modalExitProfileImg.classList.add(this.profilePhotoClassName);
+  }
+
   // находим id поста
   getId(target) {
     const id = target.closest('.post').querySelector('.identifier').textContent;
@@ -228,19 +251,19 @@ export default class OrganizerPage {
   }
 
   // переходим в чат с ботом
-  showBot(target) {
+  showBot() {
     document.querySelector('.post-area__user').classList.add('invisible');
     document.querySelector('.post-area__bot').classList.remove('invisible');
     document.querySelector('.user').classList.remove('active-user');
-    target.classList.add('active-user');
+    document.querySelector('.bot').classList.add('active-user');
   }
 
   // переходим в чат с пользователем
-  showUser(target) {
+  showUser() {
     document.querySelector('.post-area__user').classList.remove('invisible');
     document.querySelector('.post-area__bot').classList.add('invisible');
     document.querySelector('.bot').classList.remove('active-user');
-    target.classList.add('active-user');
+    document.querySelector('.user').classList.add('active-user');
   }
 
   // делаем ссылки кликательными - НЕ РАБОТАЕТ переход по ссылке
@@ -274,8 +297,8 @@ export default class OrganizerPage {
     const previewImage = document.querySelector('.preview-image');
 
     const regImg = /\.(png|jpg|jpeg|jp2|gif|raw|tiff|psd|bmp)$/i;
-    const regAudio = /\.(mp4|mp4a|mp3|wav|mid|midi|au|aiff|wma)$/i;
-    const regVideo = /\.(avi|mov|mpg|mpeg)$/i;
+    const regAudio = /\.(mp3|wav|mid|midi|au|aiff|wma)$/i;
+    const regVideo = /\.(mp4|avi|mov|mpg|mpeg)$/i;
 
     fileContainer.addEventListener('click', (e) => {
       fileInput.dispatchEvent(new MouseEvent('click'));
@@ -372,10 +395,22 @@ export default class OrganizerPage {
     document.querySelector('.container-header__search-input').value = '';
   }
 
+  // функция замены статуса
   changeStatus(target) {
     const userStatus = document.querySelector('.user-status');
+    const userStatusInHeader = document.querySelector('.container-header__profile-status');
     userStatus.classList.remove('modal-exit__online-img', 'modal-exit__departed-img', 'modal-exit__noDisturb-img');
+    userStatusInHeader.classList.remove('modal-exit__online-img', 'modal-exit__departed-img', 'modal-exit__noDisturb-img');
     const className = target.closest('.modal-exit__menu-item').querySelector('div').classList;
     userStatus.classList.add(className);
+    userStatusInHeader.classList.add(className);
+  }
+
+  // запуск и остановка прелоадера
+  preloader() {
+    document.querySelector('.loader').classList.remove('invisible');
+    setTimeout(() => {
+      document.querySelector('.loader').classList.add('invisible');
+    }, 500);
   }
 }

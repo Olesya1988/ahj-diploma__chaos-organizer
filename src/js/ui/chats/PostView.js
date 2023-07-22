@@ -3,7 +3,7 @@ export default class PostView {
 
   }
 
-  getPostHTML(id, name, content, created, status, coordinates, img, audio, video, parent) {
+  getPostHTML(id, name, content, created, status, coordinates, img, audio, video, parent, profileImg) {
     const item = document.createElement('div');
     item.classList.add('post');
     parent.appendChild(item);
@@ -16,6 +16,7 @@ export default class PostView {
       photo.classList.add('post-photo__bot');
     } else {
       photo.classList.add('post-photo__user');
+      photo.classList.add(profileImg);
     }
 
     const body = document.createElement('div');
@@ -50,7 +51,7 @@ export default class PostView {
 
     const text = document.createElement('div');
     text.classList.add('post-text');
-    text.innerHTML = content;
+    text.innerHTML = `${content}`;
     body.appendChild(text);
 
     const input = document.createElement('input');
@@ -68,15 +69,15 @@ export default class PostView {
       title.appendChild(menu);
 
       const toPinned = document.createElement('div');
-      toPinned.classList.add('toPinned');
+      toPinned.classList.add('toPinned', 'post-menu__item');
       menu.appendChild(toPinned);
 
       const toEdit = document.createElement('div');
-      toEdit.classList.add('toEdit');
+      toEdit.classList.add('toEdit', 'post-menu__item');
       menu.appendChild(toEdit);
 
       const toDelete = document.createElement('div');
-      toDelete.classList.add('toDelete');
+      toDelete.classList.add('toDelete', 'post-menu__item');
       menu.appendChild(toDelete);
 
       const help = document.createElement('div');

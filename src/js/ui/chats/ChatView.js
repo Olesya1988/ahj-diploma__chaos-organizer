@@ -29,8 +29,12 @@ export default class ChatView {
     searchForm.appendChild(search);
 
     const profile = document.createElement('div');
-    profile.classList.add('container-header__profile');
+    profile.classList.add('container-header__profile', 'modal-settings__photo-cat');
     header.appendChild(profile);
+
+    const profileStatus = document.createElement('div');
+    profileStatus.classList.add('container-header__profile-status', 'modal-exit__online-img');
+    profile.appendChild(profileStatus);
 
     const body = document.createElement('div');
     body.classList.add('container-body');
