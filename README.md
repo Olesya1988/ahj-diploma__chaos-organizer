@@ -13,7 +13,7 @@
 
 !⁠[Приветствие]​(../src/pic/README/1.PNG)
 
-!⁠[Приветствие]​(./src/pic/README/1.PNG)
+!⁠[Приветствие]​(ahj-diploma__chaos-organizer/src/pic/README/1.PNG)
 
 - Вход
   
