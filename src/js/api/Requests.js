@@ -70,9 +70,10 @@ export default class Requests {
   }
 
   // поиск поста по его id
-  async postById(id) {
+  async postById(id, user) {
     const post = {
       id,
+      user,
     };
     const response = await fetch(`${this.url}?method=postById`, {
       method: 'POST',
@@ -108,9 +109,10 @@ export default class Requests {
   }
 
   // обновляем фото
-  async updatePhoto(profilePhotoClassName) {
+  async updatePhoto(profilePhotoClassName, user) {
     const className = {
       profilePhotoClassName,
+      user,
     };
     await fetch(`${this.url}?method=updatePhoto`, {
       method: 'POST',

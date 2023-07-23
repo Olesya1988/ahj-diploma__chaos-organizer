@@ -40,7 +40,9 @@ export default class OrganizerPage {
     this.video;
     this.fileName;
     this.place;
-    this.profilePhotoClassName;
+    if (!this.profilePhotoClassName) {
+      this.profilePhotoClassName = 'modal-settings__photo-cat';
+    }
   }
 
   bindToDOM() {
@@ -69,7 +71,7 @@ export default class OrganizerPage {
     } else if (target.classList.contains('posts-footer__form__bot')) { // отправка команд боту
       const parent = document.querySelector('.posts-list__bot');
       const answer = this.chatWithBotView.getRandomInfo(inputBot.value);
-      this.postView.getPostHTML(null, this.user, inputBot.value, new Date().toLocaleString(), null, this.place, null, null, null, parent);
+      this.postView.getPostHTML(null, this.user, inputBot.value, new Date().toLocaleString(), null, this.place, null, null, null, parent, this.profilePhotoClassName);
       this.postView.getPostHTML(null, 'Bot', answer, new Date().toLocaleString(), null, this.place, null, null, null, parent);
       inputBot.value = '';
     } else if (target.classList.contains('container-header__search-form')) { // отправляем запрос поиска
@@ -107,7 +109,7 @@ export default class OrganizerPage {
       this.id = this.getId(target);
       this.requests.update(this.id, input.value);
       this.getPosts();
-      this.requests.postById(this.id);
+      this.requests.postById(this.id, this.user);
       this.getPinnedPosts();
     } else if (target.classList.contains('help-cancel')) { // отмена изменений после редактирования
       const text = target.closest('.post').querySelector('.post-text');
@@ -123,7 +125,7 @@ export default class OrganizerPage {
       this.showUser();
     } else if (target.classList.contains('toPinned')) { // закрепляем пост
       this.id = this.getId(target);
-      this.requests.postById(this.id);
+      this.requests.postById(this.id, this.user);
       this.getPinnedPosts();
     } else if (target.classList.contains('modal-coordinates__ok')) { // подтверждаем ручные координаты
       const coordinates = document.querySelector('.modal-coordinates__form-input').value;
@@ -162,7 +164,7 @@ export default class OrganizerPage {
       document.querySelector('.modal-settings').classList.add('invisible');
     } else if (target.classList.contains('modal-settings__photo-item')) { // меняем фото
       const className = [...target.classList];
-      this.requests.updatePhoto(className[0]);
+      this.requests.updatePhoto(className[0], this.user);
       this.changePhoto();
       this.getPosts();
     } else if (target.classList.contains('modal-exit__exit-text')) { // выход
@@ -188,18 +190,21 @@ export default class OrganizerPage {
     document.querySelector('.posts-list').innerHTML = '';
     const data = await this.requests.getAllPostsByUser();
 
-    const parent = document.querySelector('.posts-list__user');
+    if (data) {
+      const parent = document.querySelector('.posts-list__user');
 
-    for (let i = 0; i < data.length; i++) {
-      this.postView.getPostHTML(data[i].id, data[i].name, data[i].content, new Date(data[i].created).toLocaleString(), data[i].status, data[i].coordinates, data[i].img, data[i].audio, data[i].video, parent, this.profilePhotoClassName);
+      for (let i = 0; i < data.length; i++) {
+        this.postView.getPostHTML(data[i].id, data[i].name, data[i].content, new Date(data[i].created).toLocaleString(), data[i].status, data[i].coordinates, data[i].img, data[i].audio, data[i].video, parent, this.profilePhotoClassName);
+      }
+
+      document.querySelector('.posts-footer__input').value = '';
+
+      if (document.querySelector('.posts-list').lastElementChild !== null) {
+        document.querySelector('.posts-list').lastElementChild.scrollIntoView();
+      }
+
+      this.clickable();
     }
-
-    document.querySelector('.posts-footer__input').value = '';
-    if (document.querySelector('.posts-list').lastElementChild !== null) {
-      document.querySelector('.posts-list').lastElementChild.scrollIntoView();
-    }
-
-    this.clickable();
   }
 
   // загрузка файлов авторизованного пользователя
@@ -213,6 +218,9 @@ export default class OrganizerPage {
     videoList.innerHTML = '';
     const data = await this.requests.getAllPostsByUser();
 
+    if (data.message === 'Post not found') {
+      return;
+    }
     data.filter((el) => el.img).forEach((el) => {
       this.getLinkHTML(el.img, el.fileName, imgList);
     });
@@ -228,14 +236,24 @@ export default class OrganizerPage {
 
   // загрузка закрепленного поста авторизованного пользователя
   async getPinnedPosts() {
-    document.querySelector('.pinned_post-text').innerHTML = '';
+    const pinnedPost = document.querySelector('.pinned_post-text');
+    pinnedPost.innerHTML = '';
     const data = await this.requests.getPinnedPost();
-    document.querySelector('.pinned_post-text').innerHTML = data.content;
+    console.log(data);
+    if (data.message === 'Post not found') {
+      pinnedPost.innerHTML = '';
+    } else {
+      pinnedPost.innerHTML = data.content;
+    }
   }
 
   // загрузка нового фото пользователя
   async changePhoto() {
-    this.profilePhotoClassName = await this.requests.getUpdatePhoto();
+    const data = await this.requests.getUpdatePhoto();
+    this.profilePhotoClassName = data.class;
+    if (!this.profilePhotoClassName) {
+      this.profilePhotoClassName = 'modal-settings__photo-cat';
+    }
     const containerHeaderProfile = document.querySelector('.container-header__profile');
     const modalExitProfileImg = document.querySelector('.modal-exit__profile-img');
     containerHeaderProfile.classList.remove('modal-settings__photo-cat', 'modal-settings__photo-dog', 'modal-settings__photo-bird', 'modal-settings__photo-whale');

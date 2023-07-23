@@ -308,9 +308,13 @@ html, body, #root, .background {
   display: flex;
   gap: 5px;
   border-bottom: 1px dashed #bfdaf8;
-  padding: 5px;
-  font-style: italic;
   height: 5%;
+}
+
+.pinned_post-text {
+  overflow-y: auto;
+  font-style: italic;
+  font-size: 12px;
 }
 
 .pinned_post-img {
@@ -854,13 +858,36 @@ html, body, #root, .background {
   outline: none;
 }
 
-/* chatv */
-
-
 .invisible {
   display: none;
 }
 
 .post-title:hover > .post-menu { 
   display: flex; 
+}
+
+@media (min-width: 641px) and (max-width: 1199px) {
+  .container-header__title {  
+    font-weight: 800;    
+    font-size: 30px;    
+  }
+  
+  .container-header__search-input {
+    width: 300px;    
+  }
+}
+
+@media (max-width: 640px) {
+  .container-header__title {  
+    font-weight: 800;    
+    font-size: 20px;    
+  }
+  
+  .container-header__search-input {
+    width: 200px;    
+  }
+
+  .users-list {
+    font-size: 12px;
+  }
 }
