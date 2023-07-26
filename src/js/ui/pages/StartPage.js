@@ -40,7 +40,7 @@ export default class StartPage {
   }
 
   click(e) {
-    e.preventDefault();
+    // e.preventDefault();
     const { target } = e;
 
     if (target.classList.contains('entrance')) { // вход

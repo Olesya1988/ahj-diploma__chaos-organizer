@@ -290,7 +290,7 @@ export default class OrganizerPage {
     const regExp = /((http|https):\/\/[.\w/=&-?]+)/gi;
 
     for (let i = 0; i < codeElems.length; i++) {
-      codeElems[i].innerHTML = codeElems[i].innerHTML.replace(regExp, '<a href="$1" target="blank">$1</a>');
+      codeElems[i].innerHTML = codeElems[i].innerHTML.replace(regExp, '<a href="$1" target="_blank">$1</a>');
     }
   }
 
