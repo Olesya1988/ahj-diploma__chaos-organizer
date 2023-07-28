@@ -29,10 +29,8 @@ export default class OrganizerPage {
     this.modalDelete = document.querySelector('.modal-delete');
     this.postView = new PostView();
     this.changePhoto();
-    this.getPosts();
     this.getFiles();
     this.getPinnedPosts();
-    this.bindToDOM();
     this.fileAPI();
     this.id;
     this.img;
@@ -40,6 +38,10 @@ export default class OrganizerPage {
     this.video;
     this.fileName;
     this.place;
+    this.data;
+    this.count = 10;
+    this.getSomePosts();
+    this.bindToDOM();
     if (!this.profilePhotoClassName) {
       this.profilePhotoClassName = 'modal-settings__photo-cat';
     }
@@ -48,6 +50,7 @@ export default class OrganizerPage {
   bindToDOM() {
     document.addEventListener('submit', this.submit.bind(this));
     document.addEventListener('click', this.click.bind(this));
+    document.querySelector('.posts-list__user').addEventListener('scroll', this.throttle(this.checkPosition, 1000));
   }
 
   submit(e) {
@@ -62,7 +65,7 @@ export default class OrganizerPage {
 
     if (target.classList.contains('posts-footer__form__user')) { // отправка сообщений от пользователя
       this.requests.createPost(this.user, input.value, Date.now(), false, this.place, this.img, this.audio, this.video, this.fileName);
-      this.getPosts();
+      this.getAllPosts();
       document.querySelector('.prev').classList.add('invisible');
       this.getFiles();
       this.img = null;
@@ -82,7 +85,6 @@ export default class OrganizerPage {
   }
 
   click(e) {
-    // e.preventDefault();
     const { target } = e;
     document.querySelector('.modal-coordinates__form-input').style.background = 'white';
 
@@ -99,7 +101,7 @@ export default class OrganizerPage {
       input.value = text.textContent;
     } else if (target.classList.contains('modal-delete__submit')) { // удаление поста
       this.requests.delete(this.id);
-      this.getPosts();
+      this.getAllPosts();
       this.getFiles();
       this.modals.close(this.modalDelete);
     } else if (target.classList.contains('modal-delete__cancel')) { // отмена удаления
@@ -108,7 +110,7 @@ export default class OrganizerPage {
       const input = target.closest('.post').querySelector('.post-input');
       this.id = this.getId(target);
       this.requests.update(this.id, input.value);
-      this.getPosts();
+      this.getAllPosts();
       this.requests.postById(this.id, this.user);
       this.getPinnedPosts();
     } else if (target.classList.contains('help-cancel')) { // отмена изменений после редактирования
@@ -166,7 +168,7 @@ export default class OrganizerPage {
       const className = [...target.classList];
       this.requests.updatePhoto(className[0], this.user);
       this.changePhoto();
-      this.getPosts();
+      this.getAllPosts();
     } else if (target.classList.contains('modal-exit__exit-text')) { // выход
       location.reload();
     } else if (target.classList.contains('container-header__search-input')) { // снимаем выделение найденных элементов
@@ -185,26 +187,83 @@ export default class OrganizerPage {
     }
   }
 
-  // загрузка постов авторизованного пользователя
-  async getPosts() {
+  // загрузка всех постов авторизованного пользователя
+  async getAllPosts() {
     document.querySelector('.posts-list').innerHTML = '';
-    const data = await this.requests.getAllPostsByUser();
+    this.data = await this.requests.getAllPostsByUser();
 
-    if (data) {
+    if (this.data) {
       const parent = document.querySelector('.posts-list__user');
 
-      for (let i = 0; i < data.length; i++) {
-        this.postView.getPostHTML(data[i].id, data[i].name, data[i].content, new Date(data[i].created).toLocaleString(), data[i].status, data[i].coordinates, data[i].img, data[i].audio, data[i].video, parent, this.profilePhotoClassName);
+      for (let i = 0; i < this.data.length; i++) {
+        this.postView.getPostHTML(this.data[i].id, this.data[i].name, this.data[i].content, new Date(this.data[i].created).toLocaleString(), this.data[i].status, this.data[i].coordinates, this.data[i].img, this.data[i].audio, this.data[i].video, parent, this.profilePhotoClassName);
       }
 
       document.querySelector('.posts-footer__input').value = '';
 
-      if (document.querySelector('.posts-list').lastElementChild !== null) {
-        document.querySelector('.posts-list').lastElementChild.scrollIntoView();
-      }
+      // if (document.querySelector('.posts-list').lastElementChild !== null) {
+      //   document.querySelector('.posts-list').lastElementChild.scrollIntoView();
+      // }
 
       this.clickable();
     }
+  }
+
+  // загрузка части постов авторизованного пользователя
+  async getSomePosts() {
+    document.querySelector('.posts-list').innerHTML = '';
+    this.data = await this.requests.getAllPostsByUser();
+
+    if (this.data) {
+      const parent = document.querySelector('.posts-list__user');
+
+      for (let i = 0; i < this.count; i++) {
+        this.postView.getPostHTML(this.data[i].id, this.data[i].name, this.data[i].content, new Date(this.data[i].created).toLocaleString(), this.data[i].status, this.data[i].coordinates, this.data[i].img, this.data[i].audio, this.data[i].video, parent, this.profilePhotoClassName);
+      }
+
+      this.count *= 2;
+      if (this.count > this.data.length) {
+        this.count = this.data.length;
+        return;
+      }
+      console.log(`Нарисовано ${this.count} постов`);
+
+      document.querySelector('.posts-footer__input').value = '';
+
+      // if (document.querySelector('.posts-list').lastElementChild !== null) {
+      //   document.querySelector('.posts-list').lastElementChild.scrollIntoView();
+      // }
+
+      this.clickable();
+    }
+  }
+
+  // проверка положения последнего поста относительно родителя
+  checkPosition() {
+    const parent = document.querySelector('.posts-list__user');
+    const childArr = document.querySelectorAll('.post');
+    const child = childArr[childArr.length - 1];
+    console.log(parent.getBoundingClientRect().bottom);
+    console.log(child.getBoundingClientRect().bottom);
+    if (parent.getBoundingClientRect().bottom >= child.getBoundingClientRect().bottom) {
+      this.getSomePosts();
+    }
+  }
+
+  // тормоз
+  throttle(callee, timeout) {
+    let timer = null;
+
+    return function perform(...args) {
+      if (timer) return;
+
+      timer = setTimeout(() => {
+        callee(...args);
+
+        clearTimeout(timer);
+        timer = null;
+      }, timeout);
+    };
   }
 
   // загрузка файлов авторизованного пользователя
@@ -239,7 +298,7 @@ export default class OrganizerPage {
     const pinnedPost = document.querySelector('.pinned_post-text');
     pinnedPost.innerHTML = '';
     const data = await this.requests.getPinnedPost();
-    console.log(data);
+
     if (data.message === 'Post not found') {
       pinnedPost.innerHTML = '';
     } else {
