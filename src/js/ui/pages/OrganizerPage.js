@@ -14,6 +14,8 @@ export default class OrganizerPage {
     this.chatWithBotView = new ChatWithBotView();
     this.modals = new Modals(this.container);
     this.coordinates = new Coordinates(this.container);
+    this.data;
+    this.count = 10;
   }
 
   init() {
@@ -37,9 +39,7 @@ export default class OrganizerPage {
     this.audio;
     this.video;
     this.fileName;
-    this.place;
-    this.data;
-    this.count = 10;
+    this.place;    
     this.getSomePosts();
     this.bindToDOM();
     if (!this.profilePhotoClassName) {
@@ -221,7 +221,7 @@ export default class OrganizerPage {
         this.postView.getPostHTML(this.data[i].id, this.data[i].name, this.data[i].content, new Date(this.data[i].created).toLocaleString(), this.data[i].status, this.data[i].coordinates, this.data[i].img, this.data[i].audio, this.data[i].video, parent, this.profilePhotoClassName);
       }
 
-      this.count *= 2;
+      
       if (this.count > this.data.length) {
         this.count = this.data.length;
         return;
@@ -235,6 +235,7 @@ export default class OrganizerPage {
       // }
 
       this.clickable();
+      this.count *= 2;
     }
   }
 
