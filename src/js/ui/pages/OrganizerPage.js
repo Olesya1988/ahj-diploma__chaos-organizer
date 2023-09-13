@@ -39,9 +39,10 @@ export default class OrganizerPage {
     this.audio;
     this.video;
     this.fileName;
-    this.place;    
-    this.getSomePosts();
+    this.place;
     this.bindToDOM();
+    this.getSomePosts();
+    
     if (!this.profilePhotoClassName) {
       this.profilePhotoClassName = 'modal-settings__photo-cat';
     }
@@ -50,7 +51,7 @@ export default class OrganizerPage {
   bindToDOM() {
     document.addEventListener('submit', this.submit.bind(this));
     document.addEventListener('click', this.click.bind(this));
-    document.querySelector('.posts-list__user').addEventListener('scroll', this.throttle(this.checkPosition, 1000));
+    document.querySelector('.posts-list__user').addEventListener('scroll', this.throttle(this.checkPosition.bind(this), 1000));  
   }
 
   submit(e) {
@@ -201,41 +202,11 @@ export default class OrganizerPage {
 
       document.querySelector('.posts-footer__input').value = '';
 
-      // if (document.querySelector('.posts-list').lastElementChild !== null) {
-      //   document.querySelector('.posts-list').lastElementChild.scrollIntoView();
-      // }
-
-      this.clickable();
-    }
-  }
-
-  // загрузка части постов авторизованного пользователя
-  async getSomePosts() {
-    document.querySelector('.posts-list').innerHTML = '';
-    this.data = await this.requests.getAllPostsByUser();
-
-    if (this.data) {
-      const parent = document.querySelector('.posts-list__user');
-
-      for (let i = 0; i < this.count; i++) {
-        this.postView.getPostHTML(this.data[i].id, this.data[i].name, this.data[i].content, new Date(this.data[i].created).toLocaleString(), this.data[i].status, this.data[i].coordinates, this.data[i].img, this.data[i].audio, this.data[i].video, parent, this.profilePhotoClassName);
+      if (document.querySelector('.posts-list').lastElementChild !== null) {
+        document.querySelector('.posts-list').lastElementChild.scrollIntoView();
       }
 
-      
-      if (this.count > this.data.length) {
-        this.count = this.data.length;
-        return;
-      }
-      console.log(`Нарисовано ${this.count} постов`);
-
-      document.querySelector('.posts-footer__input').value = '';
-
-      // if (document.querySelector('.posts-list').lastElementChild !== null) {
-      //   document.querySelector('.posts-list').lastElementChild.scrollIntoView();
-      // }
-
       this.clickable();
-      this.count *= 2;
     }
   }
 
@@ -244,12 +215,43 @@ export default class OrganizerPage {
     const parent = document.querySelector('.posts-list__user');
     const childArr = document.querySelectorAll('.post');
     const child = childArr[childArr.length - 1];
-    console.log(parent.getBoundingClientRect().bottom);
-    console.log(child.getBoundingClientRect().bottom);
-    if (parent.getBoundingClientRect().bottom >= child.getBoundingClientRect().bottom) {
-      this.getSomePosts();
+    
+    if (child && parent.getBoundingClientRect().bottom >= child.getBoundingClientRect().bottom) {    
+      this.getSomePosts();          
     }
   }
+
+    // загрузка части постов авторизованного пользователя
+    async getSomePosts() {
+      
+      this.data = await this.requests.getAllPostsByUser();
+
+      if (this.count > this.data.length) {
+        this.count = this.data.length;
+        return;
+      }
+  
+      if (this.data) {
+        document.querySelector('.posts-list').innerHTML = '';
+        const parent = document.querySelector('.posts-list__user');        
+  
+        for (let i = 0; i < this.count; i++) {
+          this.postView.getPostHTML(this.data[i].id, this.data[i].name, this.data[i].content, new Date(this.data[i].created).toLocaleString(), this.data[i].status, this.data[i].coordinates, this.data[i].img, this.data[i].audio, this.data[i].video, parent, this.profilePhotoClassName);
+        } 
+        
+        
+        console.log(`Нарисовано ${this.count} постов`);
+  
+        document.querySelector('.posts-footer__input').value = '';
+  
+        // if (document.querySelector('.posts-list').lastElementChild !== null) {
+        //   document.querySelector('.posts-list').lastElementChild.scrollIntoView();
+        // }
+  
+        this.clickable();
+        this.count *= 2;
+      }
+    }
 
   // тормоз
   throttle(callee, timeout) {
