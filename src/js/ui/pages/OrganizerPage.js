@@ -66,7 +66,7 @@ export default class OrganizerPage {
 
     if (target.classList.contains('posts-footer__form__user')) { // отправка сообщений от пользователя
       this.requests.createPost(this.user, input.value, Date.now(), false, this.place, this.img, this.audio, this.video, this.fileName);
-      this.getAllPosts();
+      this.getSomePosts();
       document.querySelector('.prev').classList.add('invisible');
       this.getFiles();
       this.img = null;
@@ -194,6 +194,7 @@ export default class OrganizerPage {
     this.data = await this.requests.getAllPostsByUser();
 
     if (this.data) {
+      console.log(this.data);
       const parent = document.querySelector('.posts-list__user');
 
       for (let i = 0; i < this.data.length; i++) {
@@ -225,6 +226,7 @@ export default class OrganizerPage {
     async getSomePosts() {
       
       this.data = await this.requests.getAllPostsByUser();
+      console.log(this.data);
 
       if (this.count > this.data.length) {
         this.count = this.data.length;
@@ -346,7 +348,7 @@ export default class OrganizerPage {
     document.querySelector('.user').classList.add('active-user');
   }
 
-  // делаем ссылки кликательными - НЕ РАБОТАЕТ переход по ссылке
+  // делаем ссылки кликательными
   clickable() {
     const codeElems = document.querySelectorAll('.post-text');
     const regExp = /((http|https):\/\/[.\w/=&-?]+)/gi;
@@ -378,7 +380,7 @@ export default class OrganizerPage {
 
     const regImg = /\.(png|jpg|jpeg|jp2|gif|raw|tiff|psd|bmp)$/i;
     const regAudio = /\.(mp3|wav|mid|midi|au|aiff|wma)$/i;
-    const regVideo = /\.(mp4|avi|mov|mpg|mpeg)$/i;
+    const regVideo = /\.(mp4|avi|mov|mpg|mpeg|mkv)$/i;
 
     fileContainer.addEventListener('click', (e) => {
       fileInput.dispatchEvent(new MouseEvent('click'));
